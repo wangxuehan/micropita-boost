@@ -1,3 +1,125 @@
+# microPITA加速版本 by 王雪涵
+
+<table>
+  <tr>
+    <th></th>
+    <th></th>
+    <th colspan="4" style="text-align: center; vertical-align: middle;border-left: 1px solid;">distinct</th>
+    <th colspan="4" style="text-align: center; vertical-align: middle;border-left: 1px solid;">discriminant</th>
+  </tr>
+  <tr>
+    <th>ASV数</th>
+    <th>样本数</th>
+    <th style="border-left: 1px solid;">新脚本运行时间</th>
+    <th>旧脚本运行时间</th>
+    <th>新脚本最大消耗内存</th>
+    <th>旧脚本最大消耗内存</th>
+    <th style="border-left: 1px solid;">新脚本运行时间</th>
+    <th>旧脚本运行时间</th>
+    <th>新脚本最大消耗内存</th>
+    <th>旧脚本最大消耗内存</th>
+  </tr>
+  <tr>
+    <td>70072</td>
+    <td>99</td>
+    <td>1m26.003s</td>
+    <td>98m57.422s</td>
+    <td>409.215M</td>
+    <td>410.715M</td>
+    <td>1m26.784s</td>
+    <td>101m9.540s</td>
+    <td>409.742M</td>
+    <td>410.730M</td>
+  </tr>
+  <tr>
+    <td>27245</td>
+    <td>128</td>
+    <td>2m17.255s</td>
+    <td>725m7.820s</td>
+    <td>231.918M</td>
+    <td>232.133M</td>
+    <td>2m10.973s</td>
+    <td>713m29.524s</td>
+    <td>231.922M</td>
+    <td>232.129M</td>
+  </tr>
+  <tr>
+    <td>165064</td>
+    <td>522</td>
+    <td>58m58.144s</td>
+    <td>15448m25.926s</td>
+    <td>3.842G</td>
+    <td>3.845G</td>
+    <td>78m30.488s</td>
+    <td>>9d</td>
+    <td>3.842G</td>
+    <td>3.845G</td>
+  </tr>
+  <tr>
+    <td>21955</td>
+    <td>240</td>
+    <td>0m12.054s</td>
+    <td>5m14.873s</td>
+    <td>311.430M</td>
+    <td>311.402M</td>
+    <td>0m34.942s</td>
+    <td>5m15.221s</td>
+    <td>45.637M</td>
+    <td>311.402M</td>
+  </tr>
+  <tr>
+    <td>18383</td>
+    <td>513</td>
+    <td>14m30.452s</td>
+    <td>>9d</td>
+    <td>475.305M</td>
+    <td>471.816M</td>
+    <td>15m16.039s</td>
+    <td>2345m7.338s</td>
+    <td>475.398M</td>
+    <td>471.812M</td>
+  </tr>
+  <tr>
+    <td>42170</td>
+    <td>276</td>
+    <td>0m55.925s</td>
+    <td>56m18.635s</td>
+    <td>618.613M</td>
+    <td>617.145M</td>
+    <td>0m57.075s</td>
+    <td>60m36.021s</td>
+    <td>629.680M</td>
+    <td>617.117M</td>
+  </tr>
+  <tr>
+    <td>4674</td>
+    <td>40</td>
+    <td>0m6.492s</td>
+    <td>0m35.133s</td>
+    <td>12.125M</td>
+    <td>8.570M</td>
+    <td>0m3.244s</td>
+    <td>0m30.951s</td>
+    <td>69.773M</td>
+    <td>8.570M</td>
+  </tr>
+  <tr>
+    <td>3144</td>
+    <td>24</td>
+    <td>0m4.388s</td>
+    <td>0m5.368s</td>
+    <td>16.277M</td>
+    <td>12.547M</td>
+    <td>0m8.133s</td>
+    <td>0m6.556s</td>
+    <td>12.547M</td>
+    <td>12.547M</td>
+  </tr>
+</table>
+  
+
+
+
 # Using microPITA commandline #
 
 These common commands can be used on the default data set obtained when downloading microPITA, simply cut and paste them into a commandline in the downloaded microPITA directory.

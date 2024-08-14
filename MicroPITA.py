@@ -210,7 +210,7 @@ class MicroPITA:
 		#If they want all the sample count, return all sample names
 		iSampleCount=len(npaAbundanceMatrix[:,0])
 		if iSelectSampleCount==iSampleCount:
-		  return lsSampleNames
+			return lsSampleNames
 	
 		#Holds the samples to be returned
 		lsReturnSamplesRet = []
@@ -310,7 +310,7 @@ class MicroPITA:
 			llRetAbundance = [[a[0],dictRanks[a[0]],a[2]] for a in llRetAbundance]
 			
 		#Sort first for ties and then for the main feature
- 		if not fRank or ConstantsMicropita.c_fBreakRankTiesByDiversity:
+		if not fRank or ConstantsMicropita.c_fBreakRankTiesByDiversity:
 			llRetAbundance = sorted(llRetAbundance, key = lambda sampleData: sampleData[2], reverse = not fRank)
 		if fRank:
 			llRetAbundance = sorted(llRetAbundance, key = lambda sampleData: sampleData[1], reverse = not fRank)
@@ -318,36 +318,36 @@ class MicroPITA:
 	
 	#Testing: Happy Path Tested
 	def funcSelectTargetedTaxaSamples(self, abndMatrix, lsTargetedTaxa, iSampleSelectionCount, sMethod = ConstantsMicropita.lsTargetedFeatureMethodValues[0]):
-	  """
-	  Selects samples with the highest ranks or abundance of targeted features.
-	  If ranked, select the highest abundance for tie breaking
+		"""
+		Selects samples with the highest ranks or abundance of targeted features.
+		If ranked, select the highest abundance for tie breaking
 	
-	  :param	abndMatrix:	Abundance table to analyse 
-	  :type:	AbundanceTable	Abundance table
-	  :param	lsTargetedTaxa:	List of features
-	  :type:	list	list of strings
-	  :param	iSampleSelectionCount:	Number of samples to select
-	  :type:	integer	integer
-	  :param	sMethod:	Method to select targeted features
-	  :type:	string	String (Can be values found in ConstantsMicropita.lsTargetedFeatureMethodValues)
-	  :return	List of strings:	List of sample names which were selected
-	  List of strings	Empty list is returned on an error.
-	  """
+		:param	abndMatrix:	Abundance table to analyse 
+		:type:	AbundanceTable	Abundance table
+		:param	lsTargetedTaxa:	List of features
+		:type:	list	list of strings
+		:param	iSampleSelectionCount:	Number of samples to select
+		:type:	integer	integer
+		:param	sMethod:	Method to select targeted features
+		:type:	string	String (Can be values found in ConstantsMicropita.lsTargetedFeatureMethodValues)
+		:return	List of strings:	List of sample names which were selected
+		List of strings	Empty list is returned on an error.
+		"""
 	
-	  #Check data
-	  if(len(lsTargetedTaxa) < 1):
-		logging.error("MicroPITA.funcSelectTargetedTaxaSamples. Taxa defined selection was requested but no features were given.")
-		return []
+		#Check data
+		if(len(lsTargetedTaxa) < 1):
+			logging.error("MicroPITA.funcSelectTargetedTaxaSamples. Taxa defined selection was requested but no features were given.")
+			return []
 
-	  lsTargetedSamples = self.funcGetAverageAbundanceSamples(abndTable=abndMatrix, lsTargetedFeature=lsTargetedTaxa,
-	  	fRank=sMethod.lower() == self.c_strTargetedRanked.lower())
-	  #If an error occured or the key word for the method was not recognized
-	  if lsTargetedSamples == False: 
-		  logging.error("MicroPITA.funcSelectTargetedTaxaSamples:: Was not able to select for the features given. So targeted feature selection was performed. Check to make sure the features are spelled correctly and exist in the abundance file.")
-		  return []
+		lsTargetedSamples = self.funcGetAverageAbundanceSamples(abndTable=abndMatrix, lsTargetedFeature=lsTargetedTaxa,
+			fRank=sMethod.lower() == self.c_strTargetedRanked.lower())
+		#If an error occured or the key word for the method was not recognized
+		if lsTargetedSamples == False: 
+			logging.error("MicroPITA.funcSelectTargetedTaxaSamples:: Was not able to select for the features given. So targeted feature selection was performed. Check to make sure the features are spelled correctly and exist in the abundance file.")
+			return []
 	
-	  #Select from results
-	  return [sSample[0] for sSample in lsTargetedSamples[:iSampleSelectionCount]]
+		#Select from results
+		return [sSample[0] for sSample in lsTargetedSamples[:iSampleSelectionCount]]
 	
 	####Group 5## Random
 	#Testing: Happy path Tested
@@ -373,7 +373,7 @@ class MicroPITA:
 		liRandomIndices = random.sample(range(sampleCount), iNumberOfSamplesToReturn)
 	
 		#Create a boolean array of if indexes are to be included in the reduced array
-                return [sSample for iIndex, sSample in enumerate(lsSamples) if iIndex in liRandomIndices]
+		return [sSample for iIndex, sSample in enumerate(lsSamples) if iIndex in liRandomIndices]
 
 	#Happy path tested (case 3)
 	def funcGetAveragePopulation(self, abndTable, lfCompress):
@@ -391,11 +391,17 @@ class MicroPITA:
 
 		#Get the average populations
 		lAverageRet = []
-
-		for sFeature in abndTable.funcGetAbundanceCopy():
-			sFeature = list(sFeature)[1:]
-			sFeature=np.compress(lfCompress,sFeature,axis=0)
-			lAverageRet.append(sum(sFeature)/float(len(sFeature)))
+		data = abndTable.funcGetAbundanceCopy()
+		x = np.array(data.dtype.names)
+		lfCompress = [False] + lfCompress
+		y = np.array(lfCompress)
+		data = data[x[y]]
+		names = data.dtype.names
+		values = []
+		for name in names:
+			values.append(data[name])
+		lAverageRet = np.mean(values, axis=0)
+		lAverageRet = list(lAverageRet)
 		return lAverageRet
 
 	#Happy path tested (2 cases)
@@ -475,9 +481,9 @@ class MicroPITA:
 		#Get boolean indicator of values of interest
 		lfLabelsInterested = [sValueOfInterest == sValue for sValue in lsMetadata]
 
-                #Get the distances of the items of interest from the other metadata values
+		#Get the distances of the items of interest from the other metadata values
 		dictDistanceAverages = {}
-                for sOtherLabel in lsUniqueOtherValues:
+		for sOtherLabel in lsUniqueOtherValues:
 			#Get boolean indicator of labels not of interest 
 			lfLabelsOther = [sOtherLabel == sValue for sValue in lsMetadata]
 
@@ -490,8 +496,8 @@ class MicroPITA:
 		#Finish average by dividing by length of lsUniqueOtherValues
 		ltpleAverageDistances = [(sKey, dictDistanceAverages[sKey]/float(len(lsUniqueOtherValues))) for sKey in dictDistanceAverages]
 
-                #Sort to extract extremes
-                ltpleAverageDistances = sorted(ltpleAverageDistances,key=operator.itemgetter(1))
+		#Sort to extract extremes
+		ltpleAverageDistances = sorted(ltpleAverageDistances,key=operator.itemgetter(1))
 
 		#Get the closest and farthest distances
 		ltupleDiscriminantSamples = ltpleAverageDistances[:iSelectionCount]
@@ -502,7 +508,7 @@ class MicroPITA:
 
 		#Return discriminant tuples, distinct tuples, other tuples
 		return [ltupleDiscriminantSamples, ltupleDistinctSamples,
-			   [tplData for tplData in ltpleAverageDistances if tplData[0] not in ldSelected]]
+				 [tplData for tplData in ltpleAverageDistances if tplData[0] not in ldSelected]]
 
 	#Run the supervised method surrounding distance from centroids
 	#Happy path tested (3 test cases)
@@ -539,8 +545,16 @@ class MicroPITA:
 		for sMetadataValue in set(lstrMetadata):
 
 			#For now perform the selection here for the label of interest against the other labels
-			dictlltpleDistanceMeasurements.setdefault(sMetadataValue,[]).extend(self.funcPerformDistanceSelection(abndTable=abundanceTable,
-				iSelectionCount=iSampleSupSelectionCount, sLabel=strSupervisedMetadata, sValueOfInterest=sMetadataValue))
+			dictlltpleDistanceMeasurements.setdefault(
+				sMetadataValue,[]
+			).extend(
+				self.funcPerformDistanceSelection(
+					abndTable=abundanceTable,
+					iSelectionCount=iSampleSupSelectionCount,
+					sLabel=strSupervisedMetadata,
+					sValueOfInterest=sMetadataValue
+				)
+			)
 
 		#Make expected output files for supervised methods
 		#1. Output file which is similar to an input file for SVMs
@@ -560,7 +574,11 @@ class MicroPITA:
 		dictSelectedSamplesRet = dict()
 		for sKey, ltplDistances in dictlltpleDistanceMeasurements.items():
 			if fRunDistinct:
-				dictSelectedSamplesRet.setdefault(ConstantsMicropita.c_strDistinct,[]).extend([ltple[0] for ltple in ltplDistances[1]])
+				dictSelectedSamplesRet.setdefault(
+					ConstantsMicropita.c_strDistinct,[]
+				).extend(
+					[ltple[0] for ltple in ltplDistances[1]]
+				)
 			if fRunDiscriminant:
 				dictSelectedSamplesRet.setdefault(ConstantsMicropita.c_strDiscriminant,[]).extend([ltple[0] for ltple in ltplDistances[0]])
 
@@ -614,7 +632,7 @@ class MicroPITA:
 		for sKey in dictltpleDistanceMeasurements.keys():
 			lsSamples = [tple[0] for tple in dictltpleDistanceMeasurements[sKey]]
 			dictNew[sKey] = dictltpleDistanceMeasurements[sKey]+[tple for tple in dictlltpleRead[sKey] if tple[0] not in lsSamples] if sKey in dictlltpleRead.keys() else dictltpleDistanceMeasurements[sKey]
-                for sKey in dictlltpleRead:
+		for sKey in dictlltpleRead:
 			if sKey not in dictltpleDistanceMeasurements.keys():
 				dictNew[sKey] = dictlltpleRead[sKey]
 
@@ -624,7 +642,7 @@ class MicroPITA:
 			lsOriginalSampleNames=lsOriginalSampleNames, fFromUpdate=True)
 
 	#2 happy path test cases
-        def _writeToPredictFile(self, xPredictSupFile, xInputLabelsFile, dictltpleDistanceMeasurements, abundanceTable, lsOriginalSampleNames, fFromUpdate=False):
+	def _writeToPredictFile(self, xPredictSupFile, xInputLabelsFile, dictltpleDistanceMeasurements, abundanceTable, lsOriginalSampleNames, fFromUpdate=False):
 		"""
 		Write to the predict file.
 
@@ -698,7 +716,6 @@ class MicroPITA:
 		:return	Selected Samples:	Samples selected by methods.
 				Dictionary	{"Selection Method":["SampleID","SampleID","SampleID",...]}
 		"""
-
 		#Sample ids/names
 		lsSampleNames = abndData.funcGetSampleNames()
 	
@@ -801,11 +818,11 @@ class MicroPITA:
 		return dictSelectedSamples
 
 	def funcRun(self, strIDName, strLastMetadataName, istmInput,
-					  ostmInputPredictFile, ostmPredictFile, ostmCheckedFile, ostmOutput,
-					  cDelimiter, cFeatureNameDelimiter, strFeatureSelection,
-					  istmFeatures, iCount, lstrMethods, strLastRowMetadata = None, strLabel = None, strStratify = None,
-					  strCustomAlpha = None, strCustomBeta = None, strAlphaMetadata = None, istmBetaMatrix = None, istrmTree = None, istrmEnvr = None, 
-					  iMinSeqs = ConstantsMicropita.c_liOccurenceFilter[0], iMinSamples = ConstantsMicropita.c_liOccurenceFilter[1], fInvertDiversity = False):
+						ostmInputPredictFile, ostmPredictFile, ostmCheckedFile, ostmOutput,
+						cDelimiter, cFeatureNameDelimiter, strFeatureSelection,
+						istmFeatures, iCount, lstrMethods, strLastRowMetadata = None, strLabel = None, strStratify = None,
+						strCustomAlpha = None, strCustomBeta = None, strAlphaMetadata = None, istmBetaMatrix = None, istrmTree = None, istrmEnvr = None, 
+						iMinSeqs = ConstantsMicropita.c_liOccurenceFilter[0], iMinSamples = ConstantsMicropita.c_liOccurenceFilter[1], fInvertDiversity = False):
 		"""
 		Manages the selection of samples given different metrics.
 
@@ -858,20 +875,19 @@ class MicroPITA:
 		:return	Selected Samples:	Samples selected by methods.
 				Dictionary	{"Selection Method":["SampleID","SampleID","SampleID",...]}
 		"""
-
 		#Holds the top ranked samples from different metrics
 		#dict[metric name] = [samplename,samplename...]
 		selectedSamples = dict()
 	
 		#If a target feature file is given make sure that targeted feature is in the selection methods, if not add
 		if ConstantsMicropita.c_strFeature in lstrMethods:
-		  if not istmFeatures:
-			logging.error("MicroPITA.funcRun:: Did not receive both the Targeted feature file and the feature selection method. MicroPITA did not run.")
-			return False
+			if not istmFeatures:
+				logging.error("MicroPITA.funcRun:: Did not receive both the Targeted feature file and the feature selection method. MicroPITA did not run.")
+				return False
 
 		#Diversity metrics to run
 		#Use custom metrics if specified
-                #Custom beta metrics set to normalized only, custom alpha metrics set to count only
+		#Custom beta metrics set to normalized only, custom alpha metrics set to count only
 		diversityMetricsAlpha = [] if strCustomAlpha or strAlphaMetadata else [MicroPITA.c_strInverseSimpsonDiversity]
 		diversityMetricsBeta = [] if istmBetaMatrix else [strCustomBeta] if strCustomBeta else [MicroPITA.c_strBrayCurtisDissimilarity]
 #		inverseDiversityMetricsBeta = [MicroPITA.c_strInvBrayCurtisDissimilarity]
@@ -942,7 +958,7 @@ class MicroPITA:
 													 lsInverseBetaMetrics=diversityMetricsBetaNoNormalize,
 													 fRunDiversity=c_RUN_MAX_DIVERSITY_1,fRunRepresentative=c_RUN_REPRESENTIVE_DISSIMILARITY_2,
 													 fRunExtreme=c_RUN_MAX_DISSIMILARITY_3, strAlphaMetadata=strAlphaMetadata, 
-                                                                                                         istrmTree=istrmTree, istrmEnvr=istrmEnvr, fInvertDiversity=fInvertDiversity)
+													 istrmTree=istrmTree, istrmEnvr=istrmEnvr, fInvertDiversity=fInvertDiversity)
 
 
 			#Generate selection by the rank average of user defined taxa
@@ -969,7 +985,7 @@ class MicroPITA:
 												 lsInverseBetaMetrics=diversityMetricsBeta,
 												 fRunDiversity=c_RUN_MAX_DIVERSITY_1,fRunRepresentative=c_RUN_REPRESENTIVE_DISSIMILARITY_2,
 												 fRunExtreme=c_RUN_MAX_DISSIMILARITY_3,
-                                                                                                 istmBetaMatrix=istmBetaMatrix, istrmTree=istrmTree, istrmEnvr=istrmEnvr, fInvertDiversity=fInvertDiversity)
+												 istmBetaMatrix=istmBetaMatrix, istrmTree=istrmTree, istrmEnvr=istrmEnvr, fInvertDiversity=fInvertDiversity)
 
 			#5::Select randomly
 			#Expects sampleNames = List of sample names [name, name, name...]
@@ -981,7 +997,7 @@ class MicroPITA:
 
 			#Perform supervised selection
 			if c_RUN_DISTINCT or c_RUN_DISCRIMINANT:
- 				if strLabel:
+				if strLabel:
 					dictSelectionRet = self.funcRunSupervisedDistancesFromCentroids(abundanceTable=stratAbundanceTable,
 								fRunDistinct=c_RUN_DISTINCT, fRunDiscriminant=c_RUN_DISCRIMINANT,
 								xOutputSupFile=ostmInputPredictFile,xPredictSupFile=ostmPredictFile,
@@ -1061,16 +1077,16 @@ args.add_argument("-f","--invertDiversity", dest = "fInvertDiversity", action="s
 args = argp.add_argument_group( "Miscellaneous", "Row/column identifiers and feature targeting options" )
 args.add_argument("-d",ConstantsMicropita.c_strIDNameArgument, dest="strIDName", metavar="sample_id", help= ConstantsMicropita.c_strIDNameHelp)
 args.add_argument("-l",ConstantsMicropita.c_strLastMetadataNameArgument, dest="strLastMetadataName", metavar = "metadata_id", default = None,
-				  help= ConstantsMicropita.c_strLastMetadataNameHelp)
+					help= ConstantsMicropita.c_strLastMetadataNameHelp)
 args.add_argument("-r",ConstantsMicropita.c_strTargetedFeatureMethodArgument, dest="strFeatureSelection", metavar="targeting_method", default=ConstantsMicropita.lsTargetedFeatureMethodValues[0],
-				  choices=ConstantsMicropita.lsTargetedFeatureMethodValues, help= ConstantsMicropita.c_strTargetedFeatureMethodHelp)
+					choices=ConstantsMicropita.lsTargetedFeatureMethodValues, help= ConstantsMicropita.c_strTargetedFeatureMethodHelp)
 args.add_argument("-t",ConstantsMicropita.c_strTargetedSelectionFileArgument, dest="istmFeatures", metavar="feature_file", type=argparse.FileType("rU"), help=ConstantsMicropita.c_strTargetedSelectionFileHelp)
 args.add_argument("-w",ConstantsMicropita.c_strFeatureMetadataArgument, dest="strLastFeatureMetadata", metavar="Last_Feature_Metadata", default=None, help=ConstantsMicropita.c_strFeatureMetadataHelp)
 
 args = argp.add_argument_group( "Data labeling", "Metadata IDs for strata and supervised label values" )
 args.add_argument("-e",ConstantsMicropita.c_strSupervisedLabelArgument, dest="strLabel", metavar= "supervised_id", help=ConstantsMicropita.c_strSupervisedLabelHelp)
 args.add_argument("-s",ConstantsMicropita.c_strUnsupervisedStratifyMetadataArgument, dest="strUnsupervisedStratify", metavar="stratify_id", 
-				  help= ConstantsMicropita.c_strUnsupervisedStratifyMetadataHelp)
+					help= ConstantsMicropita.c_strUnsupervisedStratifyMetadataHelp)
 
 args = argp.add_argument_group( "File formatting", "Rarely modified file formatting options" )
 args.add_argument("-j",ConstantsMicropita.c_strFileDelimiterArgument, dest="cFileDelimiter", metavar="column_delimiter", default="\t", help=ConstantsMicropita.c_strFileDelimiterHelp) 
@@ -1078,7 +1094,7 @@ args.add_argument("-k",ConstantsMicropita.c_strFeatureNameDelimiterArgument, des
 
 args = argp.add_argument_group( "Debugging", "Debugging options - modify at your own risk!" )
 args.add_argument("-v",ConstantsMicropita.c_strLoggingArgument, dest="strLogLevel", metavar = "log_level", default="WARNING", 
-				  choices=ConstantsMicropita.c_lsLoggingChoices, help= ConstantsMicropita.c_strLoggingHelp)
+					choices=ConstantsMicropita.c_lsLoggingChoices, help= ConstantsMicropita.c_strLoggingHelp)
 args.add_argument("-c",ConstantsMicropita.c_strCheckedAbundanceFileArgument, dest="ostmCheckedFile", metavar = "output_qc", type = argparse.FileType("w"), help = ConstantsMicropita.c_strCheckedAbundanceFileHelp)
 args.add_argument("-g",ConstantsMicropita.c_strLoggingFileArgument, dest="ostmLoggingFile", metavar = "output_log", type = argparse.FileType("w"), help = ConstantsMicropita.c_strLoggingFileHelp)
 args.add_argument("-u",ConstantsMicropita.c_strSupervisedInputFile, dest="ostmInputPredictFile", metavar = "output_scaled", type = argparse.FileType("w"), help = ConstantsMicropita.c_strSupervisedInputFileHelp)
